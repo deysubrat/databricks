@@ -6,14 +6,14 @@ from pyspark.sql.window import Window
     .appName("CreditCarFraudDetection") \
     .getOrCreate()'''
     
-customer_df = spark.read.option("header", "true").csv("data/customers.csv")
-transaction_df = spark.read.option("header", "true").csv("data/transactions.csv")
-merchant_df = spark.read.option("header", "true").csv("data/merchants.csv")
-blacklist_df = spark.read.option("header", "true").csv("data/blacklist.csv")
+customer_df = spark.read.option("header", "true").csv("/Workspace/Users/subratdey85@gmail.com/databricks/fraud_detection/data/customers.csv")
+transaction_df = spark.read.option("header", "true").csv("/Workspace/Users/subratdey85@gmail.com/databricks/fraud_detection/data/transactions.csv")
+merchant_df = spark.read.option("header", "true").csv("/Workspace/Users/subratdey85@gmail.com/databricks/fraud_detection/data/merchants.csv")
+blacklist_df = spark.read.option("header", "true").csv("/Workspace/Users/subratdey85@gmail.com/databricks/fraud_detection/data/blacklist.csv")
 
 transaction_df = transaction_df.dropDuplicates(["txn_id"])
 
-transaction_df.write.mode("overwrite").parquet("bronze/transactions")
+transaction_df.write.mode("overwrite").parquet("/Workspace/Users/subratdey85@gmail.com/databricks/fraud_detection/bronze/transactions")
 
 silver_df = transaction_df.join(customer_df, "customer_id", "left") \
     .join(merchant_df, "merchant_id", "left")
@@ -56,7 +56,7 @@ fraud_df = fraud_df.withColumn(
     .otherwise("Low")
 )
 
-fraud_df.write.mode("overwrite").parquet("gold/fraud_transactions")
+fraud_df.write.mode("overwrite").parquet("/Workspace/Users/subratdey85@gmail.com/databricks/fraud_detection/gold/fraud_transactions")
 
 print(fraud_df.filter(col("risk_level") == "High").count())
 
